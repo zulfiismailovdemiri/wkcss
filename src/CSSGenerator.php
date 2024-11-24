@@ -109,6 +109,27 @@ CSS;
     }
 
     /**
+     * Generate flex space classes (e.g., .space-x-1, .space-y-2)
+     */
+    public function generateFlexSpaceClasses(): string
+    {
+        $sizes = range(0, 5); // Define gap sizes
+        $css = "";
+
+        foreach ($sizes as $size) {
+            $value = $size * self::SPACING_MULTIPLIER;
+
+            // Horizontal spaces
+            $css .= ".space-x-{$size} > * + * { margin-left: {$value}px; }\n";
+
+            // Vertical spaces
+            $css .= ".space-y-{$size} > * + * { margin-top: {$value}px; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
      * Generate background color classes, including 100-900 scales.
      */
     public function generateBackgroundColorClasses(): string
@@ -117,7 +138,6 @@ CSS;
         $css = "";
 
         foreach ($basicColors as $name => $hex) {
-            // Add the base color
             $css .= ".bg-{$name} { background-color: {$hex}; }\n";
 
             // Generate and add variants
@@ -131,20 +151,44 @@ CSS;
     }
 
     /**
+     * Generate text color classes, including 100-900 scales.
+     */
+    public function generateTextColorClasses(): string
+    {
+        $basicColors = ColorHelper::getBasicColors();
+        $css = "";
+
+        $css .= ".text-black { color: #000000; }\n";
+        $css .= ".text-white { color: #ffffff; }\n";
+
+        foreach ($basicColors as $name => $hex) {
+            $css .= ".text-{$name} { color: {$hex}; }\n";
+
+            // Generate and add variants
+            $variants = ColorHelper::generateColorScale($hex);
+            foreach ($variants as $scale => $variantHex) {
+                $css .= ".text-{$name}-{$scale} { color: {$variantHex}; }\n";
+            }
+        }
+
+        return $css;
+    }
+
+    /**
      * Generate font size classes (e.g., .text-sm, .text-lg).
      */
     public function generateFontSizeClasses(): string
     {
         $fontSizes = [
-            'xs' => '0.75rem',  // Extra small
-            'sm' => '0.875rem', // Small
-            'md' => '1rem',     // Medium (default)
-            'lg' => '1.125rem', // Large
-            'xl' => '1.25rem',  // Extra large
-            '2xl' => '1.5rem',  // 2x Extra large
-            '3xl' => '1.875rem',// 3x Extra large
-            '4xl' => '2.25rem', // 4x Extra large
-            '5xl' => '3rem',    // 5x Extra large
+            'xs' => '0.75rem',
+            'sm' => '0.875rem',
+            'md' => '1rem',
+            'lg' => '1.125rem',
+            'xl' => '1.25rem',
+            '2xl' => '1.5rem',
+            '3xl' => '1.875rem',
+            '4xl' => '2.25rem',
+            '5xl' => '3rem',
         ];
 
         $css = "";
@@ -174,7 +218,6 @@ CSS;
     {
         $outputDir = __DIR__ . '/../output';
 
-        // Ensure the output directory exists
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
@@ -189,7 +232,9 @@ CSS;
             $this->generateTransitionClasses() . "\n\n" .
             $this->generateTransformClasses() . "\n\n" .
             $this->generateSpacingClasses() . "\n\n" .
+            $this->generateFlexSpaceClasses() . "\n\n" .
             $this->generateBackgroundColorClasses() . "\n\n" .
+            $this->generateTextColorClasses() . "\n\n" .
             $this->generateFontSizeClasses();
         file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
