@@ -276,8 +276,8 @@ CSS;
 
         foreach ($breakpoints as $prefix => $minWidth) {
             $responsiveCSS .= "@media (min-width: {$minWidth}) {\n";
-            // Adjust regex to remove the dot after the prefix
-            $responsiveCSS .= preg_replace('/^\.(\w+)/m', ".{$prefix}:$1", $css);
+            // Escape the colon in the prefix with a backslash
+            $responsiveCSS .= preg_replace('/^\.(\w+)/m', ".{$prefix}\\:$1", $css);
             $responsiveCSS .= "}\n";
         }
 
