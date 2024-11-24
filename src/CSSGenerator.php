@@ -1,9 +1,78 @@
 <?php
 
 namespace App;
+
 class CSSGenerator
 {
     private const SPACING_MULTIPLIER = 4;
+
+    /**
+     * Generate hidden utility classes.
+     */
+    public function generateHiddenClasses(): string
+    {
+        return <<<CSS
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+.flex { display: flex; }
+.grid { display: grid; }
+CSS;
+    }
+
+    /**
+     * Generate opacity utility classes.
+     */
+    public function generateOpacityClasses(): string
+    {
+        $levels = range(0, 100, 10);
+        $css = "";
+
+        foreach ($levels as $level) {
+            $css .= ".opacity-{$level} { opacity: " . ($level / 100) . "; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
+     * Generate visibility utility classes.
+     */
+    public function generateVisibilityClasses(): string
+    {
+        return <<<CSS
+.visible { visibility: visible; }
+.invisible { visibility: hidden; }
+CSS;
+    }
+
+    /**
+     * Generate transition utility classes.
+     */
+    public function generateTransitionClasses(): string
+    {
+        return <<<CSS
+.transition { transition: all 0.3s ease-in-out; }
+.transition-none { transition: none; }
+CSS;
+    }
+
+    /**
+     * Generate transform utility classes.
+     */
+    public function generateTransformClasses(): string
+    {
+        return <<<CSS
+.transform { transform: none; }
+.scale-50 { transform: scale(0.5); }
+.scale-100 { transform: scale(1); }
+.scale-150 { transform: scale(1.5); }
+.rotate-0 { transform: rotate(0deg); }
+.rotate-45 { transform: rotate(45deg); }
+.rotate-90 { transform: rotate(90deg); }
+CSS;
+    }
 
     /**
      * Generate spacing classes (e.g., .mt-1, .pt-1)
@@ -62,7 +131,7 @@ class CSSGenerator
     }
 
     /**
-     * Generate font size classes (e.g., .text-sm, .text-md, .text-lg)
+     * Generate font size classes (e.g., .text-sm, .text-lg).
      */
     public function generateFontSizeClasses(): string
     {
@@ -88,120 +157,27 @@ class CSSGenerator
     }
 
     /**
-     * Generate text color classes (e.g., .text-red, .text-red-100, .text-white, .text-black)
+     * Write all utility classes into a single utilities.css file.
      */
-    public function generateTextColorClasses(): string
-    {
-        $basicColors = ColorHelper::getBasicColors();
-        $css = "";
-
-        // Add black and white explicitly
-        $css .= ".text-black { color: #000000; }\n";
-        $css .= ".text-white { color: #ffffff; }\n";
-
-        foreach ($basicColors as $name => $hex) {
-            // Add the base color
-            $css .= ".text-{$name} { color: {$hex}; }\n";
-
-            // Generate and add variants
-            $variants = ColorHelper::generateColorScale($hex);
-            foreach ($variants as $scale => $variantHex) {
-                $css .= ".text-{$name}-{$scale} { color: {$variantHex}; }\n";
-            }
-        }
-
-        return $css;
-    }
-
-    /**
-     * Generate components.css content (flex and grid utilities).
-     */
-    public function generateComponentsCSS(): string
-    {
-        $flexboxCSS = ComponentHelper::generateFlexboxClasses();
-        $gridCSS = ComponentHelper::generateGridClasses();
-
-        return $flexboxCSS . "\n\n" . $gridCSS;
-    }
-
-    /**
-     * Generate flex space classes (e.g., .space-x-1, .space-y-2)
-     */
-    public function generateFlexSpaceClasses(): string
-    {
-        $sizes = range(0, 10); // Define space sizes (0 to 10 units)
-        $css = "";
-
-        foreach ($sizes as $size) {
-            $value = $size * self::SPACING_MULTIPLIER; // Use the spacing multiplier for consistency
-
-            // Horizontal spaces
-            $css .= ".space-x-{$size} > * + * { margin-left: {$value}px; }\n";
-
-            // Vertical spaces
-            $css .= ".space-y-{$size} > * + * { margin-top: {$value}px; }\n";
-        }
-
-        return $css;
-    }
-
-    /**
-     * Generate responsive utilities for existing classes
-     */
-    public function generateResponsiveClasses(string $classes): string
-    {
-        // Define breakpoints
-        $breakpoints = [
-            'sm' => '640px',
-            'md' => '768px',
-            'lg' => '1024px',
-            'xl' => '1280px',
-        ];
-
-        $css = "";
-
-        foreach ($breakpoints as $prefix => $minWidth) {
-            $css .= "@media (min-width: {$minWidth}) {\n";
-            $responsiveClasses = preg_replace_callback(
-                '/^\.(\S+)/m',
-                fn($matches) => ".{$prefix}\\:{$matches[1]}",
-                $classes
-            );
-            $css .= $responsiveClasses;
-            $css .= "}\n";
-        }
-
-        return $css;
-    }
-
-    /**
-     * Write CSS files to the output directory
-     */
-    public function writeCSSFiles(): void
+    public function writeUtilitiesFile(): void
     {
         $outputDir = __DIR__ . '/../output';
 
-        // Ensure the output directory exists
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
-        // Write base.css
-        file_put_contents($outputDir . '/base.css', BaseHelper::generateBaseCSS());
+        // Combine all utility classes
+        $utilitiesCSS = $this->generateHiddenClasses() . "\n\n" .
+            $this->generateOpacityClasses() . "\n\n" .
+            $this->generateVisibilityClasses() . "\n\n" .
+            $this->generateTransitionClasses() . "\n\n" .
+            $this->generateTransformClasses() . "\n\n" .
+            $this->generateSpacingClasses() . "\n\n" .
+            $this->generateBackgroundColorClasses() . "\n\n" .
+            $this->generateFontSizeClasses();
 
-        // Write utilities.css
-        $utilitiesCSS = $this->generateSpacingClasses() . "\n" .
-            $this->generateBackgroundColorClasses() . "\n" .
-            $this->generateFontSizeClasses() . "\n" .
-            $this->generateTextColorClasses() . "\n" .
-            $this->generateFlexSpaceClasses();
-
-        // Add responsive utilities
-        $responsiveCSS = $this->generateResponsiveClasses($utilitiesCSS);
-
-        // Write files
-        file_put_contents($outputDir . '/base.css', BaseHelper::generateBaseCSS());
-        file_put_contents($outputDir . '/utilities.css', $utilitiesCSS . "\n" . $responsiveCSS);
-        file_put_contents($outputDir . '/components.css', $this->generateComponentsCSS());
+        // Write to utilities.css
+        file_put_contents("{$outputDir}/utilities.css", $utilitiesCSS);
     }
 }
