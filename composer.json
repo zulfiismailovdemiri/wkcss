@@ -2,6 +2,8 @@
   "name": "zulfiismailovdemiri/wkcss",
   "description": "A lightweight CSS utility framework.",
   "type": "library",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "license": "MIT",
   "authors": [
     {
