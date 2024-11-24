@@ -88,6 +88,32 @@ class CSSGenerator
     }
 
     /**
+     * Generate text color classes (e.g., .text-red, .text-red-100, .text-white, .text-black)
+     */
+    public function generateTextColorClasses(): string
+    {
+        $basicColors = ColorHelper::getBasicColors();
+        $css = "";
+
+        // Add black and white explicitly
+        $css .= ".text-black { color: #000000; }\n";
+        $css .= ".text-white { color: #ffffff; }\n";
+
+        foreach ($basicColors as $name => $hex) {
+            // Add the base color
+            $css .= ".text-{$name} { color: {$hex}; }\n";
+
+            // Generate and add variants
+            $variants = ColorHelper::generateColorScale($hex);
+            foreach ($variants as $scale => $variantHex) {
+                $css .= ".text-{$name}-{$scale} { color: {$variantHex}; }\n";
+            }
+        }
+
+        return $css;
+    }
+
+    /**
      * Generate components.css content (flex and grid utilities).
      */
     public function generateComponentsCSS(): string
