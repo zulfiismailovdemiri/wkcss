@@ -1,7 +1,24 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// Dynamically determine the autoload file
+$autoloadFiles = [
+    __DIR__ . '/../vendor/autoload.php', // Autoload for local development
+    __DIR__ . '/../../../autoload.php', // Autoload for when installed as a dependency
+];
+
+foreach ($autoloadFiles as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+        break;
+    }
+}
+
+// If no autoload file is found, throw an error
+if (!class_exists('Composer\Autoload\ClassLoader')) {
+    fwrite(STDERR, "Error: Autoloader not found. Please run 'composer install' first.\n");
+    exit(1);
+}
 
 use App\CSSGenerator;
 
