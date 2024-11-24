@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-// Dynamically determine the autoload file
+// Dynamically determine the correct autoload file
 $autoloadFiles = [
-    __DIR__ . '/../vendor/autoload.php', // Autoload for local development
-    __DIR__ . '/../../../autoload.php', // Autoload for when installed as a dependency
+    __DIR__ . '/../vendor/autoload.php',        // Autoload for local development
+    __DIR__ . '/../../../autoload.php',        // Autoload when installed as a dependency
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {
@@ -14,20 +14,20 @@ foreach ($autoloadFiles as $autoloadFile) {
     }
 }
 
-// If no autoload file is found, throw an error
+// If no autoload file is found, display an error and exit
 if (!class_exists('Composer\Autoload\ClassLoader')) {
-    fwrite(STDERR, "Error: Autoloader not found. Please run 'composer install' first.\n");
+    fwrite(STDERR, "Error: Composer autoload file not found. Please run 'composer install'.\n");
     exit(1);
 }
 
 use App\CSSGenerator;
 
-// Display a banner
+// CLI banner
 echo "WK CSS Framework CLI\n";
 echo "---------------------\n";
 echo "Generating CSS files...\n\n";
 
-// Create a CSSGenerator instance and generate files
+// Run the CSS generator
 $generator = new CSSGenerator();
 $generator->writeCSSFiles();
 
