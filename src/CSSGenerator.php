@@ -240,6 +240,27 @@ CSS;
     }
 
     /**
+     * Generate spacing between flex items (e.g., .space-x-1, .space-y-2)
+     */
+    public function generateFlexSpaceClasses(): string
+    {
+        $sizes = range(0, 5);
+        $css = "";
+
+        foreach ($sizes as $size) {
+            $spacing = $size * self::SPACING_MULTIPLIER;
+
+            // Space between items along the x-axis
+            $css .= ".space-x-{$size} > * + * { margin-left: {$spacing}px; }\n";
+
+            // Space between items along the y-axis
+            $css .= ".space-y-{$size} > * + * { margin-top: {$spacing}px; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
      * Add responsive prefixes (e.g., sm:, md:, lg:, xl:) to utility classes.
      */
     private function addResponsivePrefixes(string $css): string
@@ -285,7 +306,8 @@ CSS;
             $this->addResponsivePrefixes($this->generateBackgroundColorClasses()) . "\n\n" .
             $this->addResponsivePrefixes($this->generateTextColorClasses()) . "\n\n" .
             $this->addResponsivePrefixes($this->generateFontSizeClasses()) . "\n\n" .
-            $this->addResponsivePrefixes($this->generateOpacityClasses());
+            $this->addResponsivePrefixes($this->generateOpacityClasses()) . "\n\n" .
+            $this->addResponsivePrefixes($this->generateFlexSpaceClasses());
         file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
         // Components CSS
