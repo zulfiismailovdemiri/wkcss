@@ -157,17 +157,32 @@ CSS;
     }
 
     /**
-     * Write all utility classes into a single utilities.css file.
+     * Generate components.css content (flex and grid utilities).
      */
-    public function writeUtilitiesFile(): void
+    public function generateComponentsCSS(): string
+    {
+        $flexboxCSS = ComponentHelper::generateFlexboxClasses();
+        $gridCSS = ComponentHelper::generateGridClasses();
+
+        return $flexboxCSS . "\n\n" . $gridCSS;
+    }
+
+    /**
+     * Write all CSS files.
+     */
+    public function writeCSSFiles(): void
     {
         $outputDir = __DIR__ . '/../output';
 
+        // Ensure the output directory exists
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
-        // Combine all utility classes
+        // Write base.css
+        file_put_contents($outputDir . '/base.css', BaseHelper::generateBaseCSS());
+
+        // Write utilities.css
         $utilitiesCSS = $this->generateHiddenClasses() . "\n\n" .
             $this->generateOpacityClasses() . "\n\n" .
             $this->generateVisibilityClasses() . "\n\n" .
@@ -176,8 +191,9 @@ CSS;
             $this->generateSpacingClasses() . "\n\n" .
             $this->generateBackgroundColorClasses() . "\n\n" .
             $this->generateFontSizeClasses();
+        file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
-        // Write to utilities.css
-        file_put_contents("{$outputDir}/utilities.css", $utilitiesCSS);
+        // Write components.css
+        file_put_contents($outputDir . '/components.css', $this->generateComponentsCSS());
     }
 }
