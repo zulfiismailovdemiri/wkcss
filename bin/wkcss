@@ -13,7 +13,7 @@ echo "Generating CSS files...\n\n";
 
 // Generate CSS files
 $generator = new CSSGenerator();
-$generator->writeCSSFiles();
+$generator->writeUtilitiesFile();
 
 // Success message
 echo "CSS files have been generated successfully in the 'output' directory!\n";
