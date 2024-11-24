@@ -125,6 +125,27 @@ class CSSGenerator
     }
 
     /**
+     * Generate flex space classes (e.g., .space-x-1, .space-y-2)
+     */
+    public function generateFlexSpaceClasses(): string
+    {
+        $sizes = range(0, 10); // Define space sizes (0 to 10 units)
+        $css = "";
+
+        foreach ($sizes as $size) {
+            $value = $size * self::SPACING_MULTIPLIER; // Use the spacing multiplier for consistency
+
+            // Horizontal spaces
+            $css .= ".space-x-{$size} > * + * { margin-left: {$value}px; }\n";
+
+            // Vertical spaces
+            $css .= ".space-y-{$size} > * + * { margin-top: {$value}px; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
      * Write CSS files to the output directory
      */
     public function writeCSSFiles(): void
@@ -143,7 +164,8 @@ class CSSGenerator
         $utilitiesCSS = $this->generateSpacingClasses() . "\n" .
             $this->generateBackgroundColorClasses() . "\n" .
             $this->generateFontSizeClasses() . "\n" .
-            $this->generateTextColorClasses();
+            $this->generateTextColorClasses() . "\n" .
+            $this->generateFlexSpaceClasses();
         file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
         // Write components.css
