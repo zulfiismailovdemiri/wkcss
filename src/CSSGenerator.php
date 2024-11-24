@@ -130,7 +130,22 @@ CSS;
     }
 
     /**
-     * Generate background color classes, including 100-900 scales.
+     * Generate background opacity classes (e.g., .bg-opacity-10, .bg-opacity-50)
+     */
+    public function generateBackgroundOpacityClasses(): string
+    {
+        $levels = range(0, 100, 10);
+        $css = "";
+
+        foreach ($levels as $level) {
+            $css .= ".bg-opacity-{$level} { --bg-opacity: " . ($level / 100) . "; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
+     * Generate background color classes, supporting opacity (e.g., .bg-red-100 with .bg-opacity-50)
      */
     public function generateBackgroundColorClasses(): string
     {
@@ -138,12 +153,16 @@ CSS;
         $css = "";
 
         foreach ($basicColors as $name => $hex) {
-            $css .= ".bg-{$name} { background-color: {$hex}; }\n";
+            $rgb = ColorHelper::hexToRgb($hex);
+
+            // Base background color
+            $css .= ".bg-{$name} { background-color: rgba({$rgb['r']}, {$rgb['g']}, {$rgb['b']}, var(--bg-opacity, 1)); }\n";
 
             // Generate and add variants
             $variants = ColorHelper::generateColorScale($hex);
             foreach ($variants as $scale => $variantHex) {
-                $css .= ".bg-{$name}-{$scale} { background-color: {$variantHex}; }\n";
+                $variantRgb = ColorHelper::hexToRgb($variantHex);
+                $css .= ".bg-{$name}-{$scale} { background-color: rgba({$variantRgb['r']}, {$variantRgb['g']}, {$variantRgb['b']}, var(--bg-opacity, 1)); }\n";
             }
         }
 
@@ -233,6 +252,7 @@ CSS;
             $this->generateTransformClasses() . "\n\n" .
             $this->generateSpacingClasses() . "\n\n" .
             $this->generateFlexSpaceClasses() . "\n\n" .
+            $this->generateBackgroundOpacityClasses() . "\n\n" .
             $this->generateBackgroundColorClasses() . "\n\n" .
             $this->generateTextColorClasses() . "\n\n" .
             $this->generateFontSizeClasses();
