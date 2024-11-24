@@ -146,6 +146,35 @@ class CSSGenerator
     }
 
     /**
+     * Generate responsive utilities for existing classes
+     */
+    public function generateResponsiveClasses(string $classes): string
+    {
+        // Define breakpoints
+        $breakpoints = [
+            'sm' => '640px',
+            'md' => '768px',
+            'lg' => '1024px',
+            'xl' => '1280px',
+        ];
+
+        $css = "";
+
+        foreach ($breakpoints as $prefix => $minWidth) {
+            $css .= "@media (min-width: {$minWidth}) {\n";
+            $responsiveClasses = preg_replace_callback(
+                '/^\.(\S+)/m',
+                fn($matches) => ".{$prefix}\\:{$matches[1]}",
+                $classes
+            );
+            $css .= $responsiveClasses;
+            $css .= "}\n";
+        }
+
+        return $css;
+    }
+
+    /**
      * Write CSS files to the output directory
      */
     public function writeCSSFiles(): void
@@ -166,9 +195,13 @@ class CSSGenerator
             $this->generateFontSizeClasses() . "\n" .
             $this->generateTextColorClasses() . "\n" .
             $this->generateFlexSpaceClasses();
-        file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
-        // Write components.css
+        // Add responsive utilities
+        $responsiveCSS = $this->generateResponsiveClasses($utilitiesCSS);
+
+        // Write files
+        file_put_contents($outputDir . '/base.css', BaseHelper::generateBaseCSS());
+        file_put_contents($outputDir . '/utilities.css', $utilitiesCSS . "\n" . $responsiveCSS);
         file_put_contents($outputDir . '/components.css', $this->generateComponentsCSS());
     }
 }
