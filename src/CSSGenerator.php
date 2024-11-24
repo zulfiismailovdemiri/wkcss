@@ -142,7 +142,8 @@ class CSSGenerator
         // Write utilities.css
         $utilitiesCSS = $this->generateSpacingClasses() . "\n" .
             $this->generateBackgroundColorClasses() . "\n" .
-            $this->generateFontSizeClasses();
+            $this->generateFontSizeClasses() . "\n" .
+            $this->generateTextColorClasses();
         file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
         // Write components.css
