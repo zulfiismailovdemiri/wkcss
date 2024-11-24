@@ -60,13 +60,16 @@ CSS;
         $css = "";
 
         foreach ($basicColors as $name => $hex) {
-            // Add the base color
-            $css .= ".bg-{$name} { background-color: {$hex}; }\n";
+            $rgb = ColorHelper::hexToRgb($hex); // Convert hex to RGB
 
-            // Generate and add variants
+            // Base color with RGB variable
+            $css .= ".bg-{$name} { background-color: {$hex}; --bg-color-rgb: {$rgb['r']}, {$rgb['g']}, {$rgb['b']}; }\n";
+
+            // Generate color scale variants
             $variants = ColorHelper::generateColorScale($hex);
             foreach ($variants as $scale => $variantHex) {
-                $css .= ".bg-{$name}-{$scale} { background-color: {$variantHex}; }\n";
+                $rgbVariant = ColorHelper::hexToRgb($variantHex); // Convert variant hex to RGB
+                $css .= ".bg-{$name}-{$scale} { background-color: {$variantHex}; --bg-color-rgb: {$rgbVariant['r']}, {$rgbVariant['g']}, {$rgbVariant['b']}; }\n";
             }
         }
 
@@ -236,7 +239,7 @@ CSS;
 
         // Background opacity classes
         foreach ($opacityLevels as $level => $value) {
-            $css .= ".bg-opacity-{$level} { background-color: rgba(var(--bg-color-rgb, 0, 0, 0), {$value}); }\n";
+            $css .= ".bg-opacity-{$level} { background-color: rgba(var(--bg-color-rgb), {$value}); }\n";
         }
 
         return $css;
