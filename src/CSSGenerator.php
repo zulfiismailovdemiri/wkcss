@@ -209,6 +209,7 @@ CSS;
 
     /**
      * Generate opacity-related classes (e.g., .opacity-10, .bg-opacity-10)
+     * For background opacity, the color remains unchanged, and only the alpha channel is adjusted.
      */
     public function generateOpacityClasses(): string
     {
@@ -228,12 +229,14 @@ CSS;
 
         $css = "";
 
+        // Element opacity classes
         foreach ($opacityLevels as $level => $value) {
-            // Generate opacity classes
             $css .= ".opacity-{$level} { opacity: {$value}; }\n";
+        }
 
-            // Generate background-opacity classes
-            $css .= ".bg-opacity-{$level} { background-color: rgba(0, 0, 0, {$value}); }\n";
+        // Background opacity classes
+        foreach ($opacityLevels as $level => $value) {
+            $css .= ".bg-opacity-{$level} { background-color: rgba(var(--bg-color-rgb, 0, 0, 0), {$value}); }\n";
         }
 
         return $css;
