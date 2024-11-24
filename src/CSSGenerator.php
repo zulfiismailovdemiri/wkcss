@@ -220,6 +220,91 @@ CSS;
     }
 
     /**
+     * Generate width utility classes (e.g., .w-1\/2, .w-10, .w-screen)
+     */
+    public function generateWidthClasses(): string
+    {
+        $fractionalSizes = [
+            '1/2' => '50%',
+            '1/3' => '33.333%',
+            '2/3' => '66.666%',
+            '1/4' => '25%',
+            '3/4' => '75%',
+            '1/5' => '20%',
+            '2/5' => '40%',
+            '3/5' => '60%',
+            '4/5' => '80%',
+            '1/6' => '16.666%',
+            '5/6' => '83.333%'
+        ];
+
+        $percentageSizes = range(10, 100, 10); // Numeric percentages (10%, 20%, ..., 100%)
+        $specialSizes = ['full' => '100%', 'screen' => '100vw']; // Special sizes
+
+        $css = "";
+
+        // Fractional sizes
+        foreach ($fractionalSizes as $key => $value) {
+            $escapedKey = str_replace('/', '\\/', $key); // Escape the slash
+            $css .= ".w-{$escapedKey} { width: {$value}; }\n";
+        }
+
+        // Numeric percentage sizes
+        foreach ($percentageSizes as $percent) {
+            $css .= ".w-{$percent} { width: {$percent}%; }\n";
+        }
+
+        // Special sizes
+        foreach ($specialSizes as $key => $value) {
+            $css .= ".w-{$key} { width: {$value}; }\n";
+        }
+
+        return $css;
+    }
+
+    /**
+     * Generate height utility classes (e.g., .h-1\/2, .h-10, .h-screen)
+     */
+    public function generateHeightClasses(): string
+    {
+        $fractionalSizes = [
+            '1/2' => '50%',
+            '1/3' => '33.333%',
+            '2/3' => '66.666%',
+            '1/4' => '25%',
+            '3/4' => '75%',
+            '1/5' => '20%',
+            '2/5' => '40%',
+            '3/5' => '60%',
+            '4/5' => '80%',
+            '1/6' => '16.666%',
+            '5/6' => '83.333%'
+        ];
+
+        $percentageSizes = range(10, 100, 10); // Numeric percentages (10%, 20%, ..., 100%)
+        $specialSizes = ['full' => '100%', 'screen' => '100vh']; // Special sizes
+
+        $css = "";
+
+        // Fractional sizes
+        foreach ($fractionalSizes as $key => $value) {
+            $escapedKey = str_replace('/', '\\/', $key); // Escape the slash
+            $css .= ".h-{$escapedKey} { height: {$value}; }\n";
+        }
+
+        // Numeric percentage sizes
+        foreach ($percentageSizes as $percent) {
+            $css .= ".h-{$percent} { height: {$percent}%; }\n";
+        }
+
+        // Special sizes
+        foreach ($specialSizes as $key => $value) {
+            $css .= ".h-{$key} { height: {$value}; }\n";
+        }
+
+        return $css;
+    }
+    /**
      * Generate components.css content (flex and grid utilities).
      */
     public function generateComponentsCSS(): string
@@ -255,7 +340,9 @@ CSS;
             $this->generateBackgroundOpacityClasses() . "\n\n" .
             $this->generateBackgroundColorClasses() . "\n\n" .
             $this->generateTextColorClasses() . "\n\n" .
-            $this->generateFontSizeClasses();
+            $this->generateFontSizeClasses() . "\n\n" .
+            $this->generateWidthClasses() . "\n\n" .
+            $this->generateHeightClasses();
         file_put_contents($outputDir . '/utilities.css', $utilitiesCSS);
 
         // Write components.css
