@@ -1,7 +1,7 @@
 <?php
 
+use App\Helpers\BaseHelper;
 use PHPUnit\Framework\TestCase;
-use App\BaseHelper;
 
 class BaseHelperTest extends TestCase
 {

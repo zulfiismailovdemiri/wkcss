@@ -1,7 +1,7 @@
 <?php
 
+use App\Helpers\ComponentHelper;
 use PHPUnit\Framework\TestCase;
-use App\ComponentHelper;
 
 class ComponentHelperTest extends TestCase
 {

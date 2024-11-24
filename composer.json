@@ -11,6 +11,14 @@
       "email": "id@werkkasten.com"
     }
   ],
+  "scripts": {
+    "post-install-cmd": [
+      "@php vendor/bin/wkcss"
+    ],
+    "post-update-cmd": [
+      "@php vendor/bin/wkcss"
+    ]
+  },
   "require": {
     "php": ">=8.2"
   },

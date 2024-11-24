@@ -1,7 +1,7 @@
 <?php
 
+use App\Helpers\ColorHelper;
 use PHPUnit\Framework\TestCase;
-use App\ColorHelper;
 
 class ColorHelperTest extends TestCase
 {
